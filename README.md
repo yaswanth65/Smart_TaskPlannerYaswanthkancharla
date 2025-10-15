@@ -1,7 +1,7 @@
 # Goal Breakdown — Fullstack repository
 
 This repository contains a small fullstack app for breaking down goals into plans.
-
+Demo: https://drive.google.com/file/d/1vzHM9ZXDJhVZp6mzfyPKbeUZjyKfBvUb/view
 Structure
 
 - backend/: Express + MongoDB backend
