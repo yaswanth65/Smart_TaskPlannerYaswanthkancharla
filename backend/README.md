@@ -1,7 +1,8 @@
 # Goal Breakdown Backend
 
 Lightweight Express + Mongoose backend for generating goal breakdown plans using Google Gemini.
-
+Demonstration:
+https://drive.google.com/file/d/1vzHM9ZXDJhVZp6mzfyPKbeUZjyKfBvUb/view
 Quick start
 
 1. Copy `.env.example` to `.env` and fill values. This backend uses Google Generative Language (Gemini).
