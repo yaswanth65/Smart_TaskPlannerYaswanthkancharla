@@ -26,7 +26,10 @@ export default function App() {
     return newId;
   });
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  // In deployment the frontend is served from the same host as the backend;
+  // default to a relative base so requests go to /api/... When developing
+  // locally you can set VITE_API_URL to e.g. http://localhost:5000
+  const API_URL = import.meta.env.VITE_API_URL || "";
 
   // Load plan history on mount
   useEffect(() => {
@@ -297,11 +300,11 @@ export default function App() {
           {/* Stats Tab */}
           {activeTab === "stats" && <StatsDashboard apiUrl={API_URL} />}
 
-          {/* Ideas Tab (dummy) */}
-          {activeTab === "ideas" && <Ideas />}
+          {/* Ideas Tab */}
+          {activeTab === "ideas" && <Ideas apiUrl={API_URL} />}
 
-          {/* Templates Tab (dummy) */}
-          {activeTab === "templates" && <Templates />}
+          {/* Templates Tab */}
+          {activeTab === "templates" && <Templates apiUrl={API_URL} />}
 
           {/* Collaborate Tab (dummy) */}
           {activeTab === "collab" && <Collaborate />}
