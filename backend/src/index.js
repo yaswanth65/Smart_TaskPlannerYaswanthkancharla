@@ -23,6 +23,8 @@ const logger = pino({
 });
 
 const planRoutes = require('./routes/planRoutes');
+const contentRoutes = require('./routes/contentRoutes');
+const path = require('path');
 
 const app = express();
 
@@ -51,6 +53,23 @@ app.use(express.json());
 app.use('/api/generate-plan', aiRateLimit);
 
 app.use('/api', planRoutes);
+app.use('/api', contentRoutes);
+
+// Serve frontend static build if present. FRONTEND_BUILD_DIR can be set in env
+const FRONTEND_BUILD_DIR = process.env.FRONTEND_BUILD_DIR || path.join(__dirname, '..', '..', 'frontend', 'dist');
+try {
+  app.use(express.static(FRONTEND_BUILD_DIR));
+  // Fallback to index.html for client-side routing
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/health')) return next();
+    res.sendFile(path.join(FRONTEND_BUILD_DIR, 'index.html'), (err) => {
+      if (err) next();
+    });
+  });
+} catch (e) {
+  // ignore if frontend build not present
+  logger.info('No frontend build found to serve statically');
+}
 
 // Health check endpoint
 app.get('/health', (req, res) => {
