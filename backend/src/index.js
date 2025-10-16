@@ -6,7 +6,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 const rateLimit = require('express-rate-limit');
 const pino = require('pino');
 
@@ -30,7 +30,7 @@ const app = express();
 
 // Request ID middleware
 app.use((req, res, next) => {
-  req.requestId = req.get('X-Request-Id') || uuidv4();
+  req.requestId = req.get('X-Request-Id') || randomUUID();
   res.set('X-Request-Id', req.requestId);
   req.logger = logger.child({ requestId: req.requestId });
   req.logger.info({ method: req.method, url: req.url }, 'Request started');
