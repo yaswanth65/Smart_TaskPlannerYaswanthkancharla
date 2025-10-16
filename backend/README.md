@@ -42,3 +42,27 @@ curl -X POST http://localhost:5000/api/generate-plan \
 Notes
 
 - The AI integration uses the Google Generative Language API (Gemini). If the API key is missing or an error occurs, a mock plan is returned to enable local development.
+
+Docker & Deployment
+
+This repository includes a multi-stage Dockerfile that builds the frontend and packages it together with the backend. It is suitable for deploying to Render or other container platforms.
+
+Build locally:
+
+```bash
+docker build -t smart-taskplanner:latest .
+```
+
+Run the container (example):
+
+```bash
+docker run -e MONGODB_URI='mongodb://host:27017/goalplanner' -e GOOGLE_API_KEY='your_key' -p 5000:5000 smart-taskplanner:latest
+```
+
+Render notes:
+
+- Create a new Web Service in Render and select "Docker" as the environment.
+- Provide environment variables: `MONGODB_URI`, `GOOGLE_API_KEY`, `PORT` (optional).
+- The Dockerfile exposes port 5000 by default.
+
+If you prefer to build the frontend separately, set `FRONTEND_BUILD_DIR` environment variable to point to the frontend build directory inside the container.

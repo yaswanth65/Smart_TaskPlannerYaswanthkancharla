@@ -1,0 +1,11 @@
+# Render service definition (example)
+services:
+  - type: web
+    name: smart-taskplanner
+    env: docker
+    plan: free
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: MONGODB_URI
+      - key: GOOGLE_API_KEY
+      - key: PORT

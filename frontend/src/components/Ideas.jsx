@@ -1,18 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-export default function Ideas() {
-  const [ideas, setIdeas] = useState([
-    "Break project into weekly milestones",
-    "Create a short demo landing page",
-    "Record a screen walkthrough with voiceover",
-  ]);
+export default function Ideas({ apiUrl }) {
+  const [ideas, setIdeas] = useState([]);
   const [q, setQ] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function addIdea(e) {
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      setLoading(true);
+      try {
+        if (apiUrl) {
+          const res = await axios.get(`${apiUrl}/api/ideas`);
+          if (res.data && res.data.status === "ok") {
+            if (mounted) setIdeas(res.data.data.ideas.map((i) => i.title));
+          }
+        } else {
+          // Fallback sample ideas
+          setIdeas([
+            "Break project into weekly milestones",
+            "Create a short demo landing page",
+            "Record a screen walkthrough with voiceover",
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to load ideas", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [apiUrl]);
+
+  async function addIdea(e) {
     e.preventDefault();
     if (!q.trim()) return;
-    setIdeas((s) => [q.trim(), ...s]);
-    setQ("");
+    try {
+      if (apiUrl) {
+        await axios.post(`${apiUrl}/api/ideas`, {
+          title: q.trim(),
+          content: "",
+        });
+        // reload
+        const res = await axios.get(`${apiUrl}/api/ideas`);
+        if (res.data && res.data.status === "ok")
+          setIdeas(res.data.data.ideas.map((i) => i.title));
+      } else {
+        setIdeas((s) => [q.trim(), ...s]);
+      }
+      setQ("");
+    } catch (err) {
+      console.error("Failed to add idea", err);
+    }
   }
 
   return (
@@ -37,13 +80,17 @@ export default function Ideas() {
         </button>
       </form>
 
-      <ul className="space-y-2">
-        {ideas.map((it, i) => (
-          <li key={i} className="text-sm p-2 bg-gray-50 rounded">
-            {it}
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <div className="text-sm text-gray-500">Loading ideas...</div>
+      ) : (
+        <ul className="space-y-2">
+          {ideas.map((it, i) => (
+            <li key={i} className="text-sm p-2 bg-gray-50 rounded">
+              {it}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
