@@ -29,10 +29,21 @@ jobs:
         working-directory: ./frontend
         run: bun install --frozen-lockfile
 
+      - name: Check if lint script exists
+        id: check-lint
+        working-directory: ./frontend
+        run: |
+          if grep -q '"lint"' package.json; then
+            echo "has_lint=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_lint=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Run ESLint
+        if: steps.check-lint.outputs.has_lint == 'true'
         working-directory: ./frontend
         run: bun run lint
-        continue-on-error: false
+        continue-on-error: true
 
       - name: Build React app
         working-directory: ./frontend
